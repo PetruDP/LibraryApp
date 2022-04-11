@@ -19,6 +19,7 @@ public class Main {
             mainMenu();
             System.out.println("Choose option: ");
             int option = sc.nextInt();
+            sc.nextLine();
            if (option < 1 || option > 18){
                System.out.println("Invalid option!");
            }else{
@@ -29,6 +30,7 @@ public class Main {
                            clientsMenu();
                            System.out.println("Choose option: ");
                            int optionClientM = sc.nextInt();
+                           sc.nextLine();
 
 
                            switch (optionClientM) {
@@ -50,6 +52,7 @@ public class Main {
                            booksMenu();
                            System.out.println("Choose option: ");
                            int optionBooksM = sc.nextInt();
+                           sc.nextLine();
 
                            switch (optionBooksM) {
                                case 1 -> library.addBook();

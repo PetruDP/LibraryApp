@@ -9,10 +9,6 @@ public class Student {
     private int currentYear;
     private String uniqueId;
 
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
     public Student(String name, int booksBorrowed, Date dateReturn, String college, int currentYear) {
         this.name = name;
         this.booksBorrowed = booksBorrowed;
@@ -28,6 +24,10 @@ public class Student {
         this.college = college;
         this.currentYear = currentYear;
         this.uniqueId = UUID.randomUUID().toString();
+    }
+
+    public String getUniqueId() {
+        return uniqueId;
     }
 
     public String getName() {

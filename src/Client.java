@@ -8,7 +8,15 @@ public class Client {
     private LocalDate dateReturn;
     private boolean haveABook;
 
+    public Client(String name, String uniqueId, String type) {
+        this.name = name;
+        this.uniqueId = uniqueId;
+        this.type = type;
+        this.booksBorrowed = 0;
+        this.dateReturn = null;
+        this.haveABook = false;
 
+    }
 
     public void setBooksBorrowed() {
         this.booksBorrowed++;
@@ -28,16 +36,6 @@ public class Client {
 
     public boolean isHavingABook() {
         return haveABook;
-    }
-
-    public Client(String name, String uniqueId, String type) {
-        this.name = name;
-        this.uniqueId = uniqueId;
-        this.type = type;
-        this.booksBorrowed = 0;
-        this.dateReturn = null;
-        this.haveABook = false;
-
     }
 
     public String getName() {
