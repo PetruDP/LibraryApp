@@ -2,6 +2,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Library {
@@ -24,24 +26,21 @@ public class Library {
 
     public void addStudent() {
         System.out.println("Name: ");
-        String name = getNameException();
+        String name = checkNameInput();
         System.out.println("College:");
-        String inputCollege = sc.nextLine();
-        Colleges college = Colleges.valueOf(inputCollege);
+        String inputCollege = checkNameInput();
+        Colleges college = Colleges.valueOf(inputCollege.toUpperCase());
         System.out.println("Current year of study: ");
         int currentYear = getIntException();
-        sc.nextLine();
         clientsList.add(new Client(name, college, currentYear));
         System.out.println(name + " succesfully added!");
     }
 
     public void addTeacher() {
         System.out.println("Name: ");
-        sc.nextLine();
-        String name = getNameException();
+        String name = checkNameInput();
         System.out.println("Subject: ");
-        // here is name exception
-        String subject = getNameException();
+        String subject = checkNameInput();
         clientsList.add(new Client(name, subject));
         System.out.println(name + " succesfully added!\n");
     }
@@ -49,18 +48,14 @@ public class Library {
     public void addBook() {
         System.out.println("Title: ");
         String title = sc.nextLine();
-        //exception
+        //exception?
         System.out.println("Author: ");
-        String author = sc.nextLine();
-        //exception
+        String author = checkNameInput();
         System.out.println("Genre: ");
-        String strGenre = sc.nextLine();
-        //exception
+        String strGenre = checkNameInput();
         Genre genre = Genre.valueOf(strGenre);
         System.out.println("Number of pages: ");
         int pages = getIntException();
-        sc.nextLine();
-        //exception
         booksList.add(new Book(title, author, genre, pages, true));
         System.out.println(title + " succesfully added!\n");
     }
@@ -120,9 +115,9 @@ public class Library {
         return false;
     }
 
-    public boolean bookTitleExists(String title){
-        for (int i = 0; i < booksList.size(); i++){
-            if (title.equals(booksList.get(i).getTitle())){
+    public boolean bookTitleExists(String title) {
+        for (int i = 0; i < booksList.size(); i++) {
+            if (title.equals(booksList.get(i).getTitle())) {
                 return true;
             }
         }
@@ -187,7 +182,7 @@ public class Library {
     public void searchBook() {
         System.out.println("Enter the title: ");
         String title = sc.nextLine();
-        //exception
+        //exception?
 
         for (int i = 0; i < booksList.size(); i++) {
             if (title.equals(booksList.get(i).getTitle())) {
@@ -202,8 +197,7 @@ public class Library {
 
     public void sortByGenre() {
         System.out.println("Enter the genre: ");
-        String strGenre = sc.nextLine();
-        //exception
+        String strGenre = checkNameInput();
         Genre genre = Genre.valueOf(strGenre);
         for (int i = 0; i < booksList.size(); i++) {
             if (genre.equals(booksList.get(i).getGenre())) {
@@ -293,11 +287,10 @@ public class Library {
 
     public void borrowBook() {
         System.out.println("Client name: ");
-        String name = sc.nextLine();
-        //exception
+        String name = checkNameInput();
         System.out.println("Book title: ");
         String title = sc.nextLine();
-        //excerption
+        //excerption?
         if (!clientsList.get(findClient(name)).getHaveABook()) {
             if (findBook(title) >= 0 && booksList.get(findBook(title)).getAvailable()) {
                 clientsList.get(findClient(name)).setHaveABook(true);
@@ -317,12 +310,11 @@ public class Library {
 
     public void returnBook() {
         System.out.println("Client name: ");
-        String name = sc.nextLine();
-        //exception
+        String name = checkNameInput();
         if (studentNameAlreadyExists(name)) {
             System.out.println("Book title: ");
             String title = sc.nextLine();
-            //exception
+            //exception?
             if (bookTitleExists(title)) {
                 booksList.get(findBook(title)).setAvailable(true);
                 clientsList.get(findClient(name)).setHaveABook(false);
@@ -347,6 +339,7 @@ public class Library {
     public void bookHistory() {
         System.out.println("Book's title: ");
         String title = sc.nextLine();
+        //exception?
         if (bookHolders.size() == 0) {
             System.out.println("No holders to show");
             return;
@@ -362,8 +355,7 @@ public class Library {
         Date currentDate = new Date();
 
         System.out.println("Client's name:");
-        String name = sc.nextLine();
-        //exception
+        String name = checkNameInput();
         if (!clientsList.get(findClient(name)).getHaveABook()) {
             System.out.println("No book in " + name + "'s possesion.");
         } else if (currentDate.after(clientsList.get(findClient(name)).getDateReturn())) {
@@ -377,7 +369,8 @@ public class Library {
     public void removeBook() {
         System.out.println("Book's title: ");
         String title = sc.nextLine();
-        //exception
+        //exception?
+
         if (bookTitleExists(title)) {
             booksList.get(findBook(title)).setBookHolders(0);
             booksList.get(findBook(title)).setAvailable(false);
@@ -388,8 +381,7 @@ public class Library {
 
     public void removeClient() {
         System.out.println("Client's name: ");
-        String name = sc.nextLine();
-        //exception
+        String name = checkNameInput();
         if (clientsList.get(findClient(name)).getType().equals("Student")) {
             clientsList.remove(findStudent(name));
         } else {
@@ -410,21 +402,33 @@ public class Library {
             } catch (InputMismatchException e) {
                 sc.nextLine();
                 System.out.println("Try to use only digits from 0 to 9.");
-            } catch (NoSuchElementException e) {
-                sc.nextLine();
-                System.out.println("Try to use only digits from 0 to 9.");
             }
         }
     }
 
-    public String getNameException(){
-        while (true) {
-            try {
-                return sc.nextLine();
-            } catch (NoSuchElementException e) {
-                sc.nextLine();
-                System.out.println("Invalid name");
-            }
+
+    // implement map - commit
+    // make case sensitive - commit
+    // student teacher client - commit
+    public String checkNameInput() {
+         String name = sc.nextLine();
+        Pattern specialChar = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
+        Matcher hasSpecial = specialChar.matcher(name);
+        while (name.matches(".*[0-9].*") || hasSpecial != null) {
+            System.out.println("Invalid name. Please do not use digits or special characters in name.");
+            System.out.println("Name: ");
+            name = sc.nextLine();
         }
+        return name;
+
+//        while (true) {
+//            try {
+//                return sc.nextLine();
+//            } catch (NoSuchElementException e) {
+//                sc.nextLine();
+//                System.out.println("Invalid name");
+//            }
+//        }
     }
+
 }

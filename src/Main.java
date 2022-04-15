@@ -8,7 +8,6 @@ public class Main {
     public static Library library = new Library("Central Library");
 
     public static void main(String[] args) {
-
         System.out.println("Welcome to " + library.getLibraryName() + " application");
 
         Scanner sc = new Scanner(System.in);
