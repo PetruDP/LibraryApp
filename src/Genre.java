@@ -1,4 +1,12 @@
 public enum Genre {
     DRAMA,
-    ROMANCE
+    ROMANCE,
+    COMEDY,
+    SCIENCEFICTION,
+    ADVENTURE,
+    HORROR,
+    DETECTIVE,
+    CLASSICS,
+    ACTION
+
 }

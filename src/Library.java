@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -8,8 +9,6 @@ public class Library {
     private Scanner sc = new Scanner(System.in);
     private String libraryName;
 
-    ArrayList<Student> studentsList = new ArrayList<>();
-    ArrayList<Teacher> teachersList = new ArrayList<>();
     ArrayList<Client> clientsList = new ArrayList<>();
     ArrayList<Book> booksList = new ArrayList<>();
     ArrayList<Client> bookHolders = new ArrayList<>();
@@ -25,54 +24,50 @@ public class Library {
 
     public void addStudent() {
         System.out.println("Name: ");
-        String name = sc.nextLine();
-        if (studentNameAlreadyExists(name)) {
-            System.out.println("Name already in use.");
-            addStudent();
-        }
+        String name = getNameException();
         System.out.println("College:");
-        String college = sc.nextLine();
-
+        String inputCollege = sc.nextLine();
+        Colleges college = Colleges.valueOf(inputCollege);
         System.out.println("Current year of study: ");
-        int currentYear = sc.nextInt();
+        int currentYear = getIntException();
         sc.nextLine();
-        studentsList.add(new Student(name, college, currentYear));
-        clientsList.add(new Client(name, studentsList.get(findStudent(name)).getUniqueId(), "Student"));
+        clientsList.add(new Client(name, college, currentYear));
         System.out.println(name + " succesfully added!");
     }
 
     public void addTeacher() {
         System.out.println("Name: ");
         sc.nextLine();
-        String name = sc.nextLine();
-        if (teacherNameAlreadyExists(name)) {
-            System.out.println("Name already in use.");
-            return;
-        }
+        String name = getNameException();
         System.out.println("Subject: ");
-        String subject = sc.next();
-        teachersList.add(new Teacher(name, subject));
-        clientsList.add(new Client(name, teachersList.get(findTeacher(name)).getUniqueId(), "Teacher"));
+        // here is name exception
+        String subject = getNameException();
+        clientsList.add(new Client(name, subject));
         System.out.println(name + " succesfully added!\n");
     }
 
     public void addBook() {
         System.out.println("Title: ");
         String title = sc.nextLine();
+        //exception
         System.out.println("Author: ");
         String author = sc.nextLine();
+        //exception
         System.out.println("Genre: ");
-        String genre = sc.nextLine();
+        String strGenre = sc.nextLine();
+        //exception
+        Genre genre = Genre.valueOf(strGenre);
         System.out.println("Number of pages: ");
-        int pages = sc.nextInt();
+        int pages = getIntException();
         sc.nextLine();
+        //exception
         booksList.add(new Book(title, author, genre, pages, true));
         System.out.println(title + " succesfully added!\n");
     }
 
     public int findStudent(String name) {
-        for (int i = 0; i < studentsList.size(); i++) {
-            if (name.equals(studentsList.get(i).getName())) {
+        for (int i = 0; i < clientsList.size(); i++) {
+            if (name.equals(clientsList.get(i).getName()) && clientsList.get(i).getType().equals("Student")) {
                 return i;
             }
         }
@@ -80,26 +75,27 @@ public class Library {
     }
 
     public int findTeacher(String name) {
-        for (int i = 0; i < teachersList.size(); i++) {
-            if (name.equals(teachersList.get(i).getName())) {
+        for (int i = 0; i < clientsList.size(); i++) {
+            if (name.equals(clientsList.get(i).getName()) && clientsList.get(i).getType().equals("Teacher")) {
                 return i;
             }
         }
         return -1;
     }
 
-    public int findBook(String title){
-        for (int i = 0; i < booksList.size(); i++){
-            if (title.equals(booksList.get(i).getTitle())){
+    public int findBook(String title) {
+        for (int i = 0; i < booksList.size(); i++) {
+            if (title.equals(booksList.get(i).getTitle())) {
                 return i;
             }
         }
         return -1;
     }
 
-    public int findClient(String name){
-        for (int i = 0; i < clientsList.size(); i++){
-            if (name.equals(clientsList.get(i).getName())){
+    // ???????????
+    public int findClient(String name) {
+        for (int i = 0; i < clientsList.size(); i++) {
+            if (name.equals(clientsList.get(i).getName())) {
                 return i;
             }
         }
@@ -107,8 +103,8 @@ public class Library {
     }
 
     public boolean teacherNameAlreadyExists(String name) {
-        for (int i = 0; i < teachersList.size(); i++) {
-            if (name.equals(teachersList.get(i).getName())) {
+        for (int i = 0; i < clientsList.size(); i++) {
+            if (name.equals(clientsList.get(i).getName())) {
                 return true;
             }
         }
@@ -116,8 +112,8 @@ public class Library {
     }
 
     public boolean studentNameAlreadyExists(String name) {
-        for (int i = 0; i < studentsList.size(); i++) {
-            if (name.equals(studentsList.get(i).getName())) {
+        for (int i = 0; i < clientsList.size(); i++) {
+            if (name.equals(clientsList.get(i).getName())) {
                 return true;
             }
         }
@@ -134,7 +130,7 @@ public class Library {
     }
 
     public void showClients() {
-        if (clientsList.size() == 0){
+        if (clientsList.size() == 0) {
             System.out.println("No clients to show");
         }
         for (int i = 0; i < clientsList.size(); i++) {
@@ -144,22 +140,27 @@ public class Library {
     }
 
     public void showStudents() {
-        if (studentsList.size() == 0){
+        if (clientsList.size() == 0) {
             System.out.println("No students to show");
         }
-        for (int i = 0; i < studentsList.size(); i++) {
-            System.out.println("Name: " + studentsList.get(i).getName() + " || College: " + studentsList.get(i).getCollege() +
-                    " || Current year of study: " + studentsList.get(i).getCurrentYear() +
-                    " || ID code: " + studentsList.get(i).getUniqueId());
+        for (int i = 0; i < clientsList.size(); i++) {
+            if (clientsList.get(i).getType().equals("Student")) {
+                System.out.println("Name: " + clientsList.get(i).getName() + " || College: " + clientsList.get(i).getCollege() +
+                        " || Current year of study: " + clientsList.get(i).getCurrentYear() +
+                        " || ID code: " + clientsList.get(i).getUniqueId());
+            }
         }
     }
 
-    public void showTeachers() {
-        for (int i = 0; i < teachersList.size(); i++) {
-            System.out.println("Name: " + teachersList.get(i).getName() + " || Subject: "
-                    + teachersList.get(i).getSubject() + " || ID code: " + teachersList.get(i).getUniqueId());
-        }
-    }
+    // never used
+//    public void showTeachers() {
+//        for (int i = 0; i < clientsList.size(); i++) {
+//            if (clientsList.get(i).getType().equals("Teacher")) {
+//                System.out.println("Name: " + clientsList.get(i).getName() + " || Subject: "
+//                        + clientsList.get(i).getSubject() + " || ID code: " + clientsList.get(i).getUniqueId());
+//            }
+//        }
+//    }
 
     public void showBooks() {
         for (int i = 0; i < booksList.size(); i++) {
@@ -171,7 +172,7 @@ public class Library {
 
     public void showAvailableBooks() {
         for (int i = 0; i < booksList.size(); i++) {
-            if (booksList.get(i).isAvailable()) {
+            if (booksList.get(i).getAvailable()) {
                 System.out.println("Title: " + booksList.get(i).getTitle() + " || Author: " + booksList.get(i).getAuthor() +
                         " || Genre: " + booksList.get(i).getGenre() + " || Number of pages: " + booksList.get(i).getPages() +
                         " || ID code: " + booksList.get(i).getUniqueId());
@@ -179,13 +180,14 @@ public class Library {
         }
     }
 
-    public void booksInLibrary(){
+    public void booksInLibrary() {
         System.out.println("\n" + booksList.size() + " books available in library" + "\n");
     }
 
     public void searchBook() {
         System.out.println("Enter the title: ");
         String title = sc.nextLine();
+        //exception
 
         for (int i = 0; i < booksList.size(); i++) {
             if (title.equals(booksList.get(i).getTitle())) {
@@ -195,12 +197,14 @@ public class Library {
                 return;
             }
         }
-            System.out.println("Book " + title + " not found.");
+        System.out.println("Book " + title + " not found.");
     }
 
     public void sortByGenre() {
         System.out.println("Enter the genre: ");
-        String genre = sc.nextLine();
+        String strGenre = sc.nextLine();
+        //exception
+        Genre genre = Genre.valueOf(strGenre);
         for (int i = 0; i < booksList.size(); i++) {
             if (genre.equals(booksList.get(i).getGenre())) {
                 System.out.println("Title: " + booksList.get(i).getTitle() + " || Author: " + booksList.get(i).getAuthor() +
@@ -261,20 +265,20 @@ public class Library {
         }
     }
 
-    public void greatestReader(){
+    public void greatestReader() {
 
         int[] booksBorrowedList = new int[clientsList.size()];
         ArrayList<Client> clientsSortByBooksReaded = new ArrayList<>();
 
-        for (int i = 0; i < clientsList.size(); i++){
-          booksBorrowedList[i] = clientsList.get(i).getBooksBorrowed();
+        for (int i = 0; i < clientsList.size(); i++) {
+            booksBorrowedList[i] = clientsList.get(i).getBooksBorrowed();
         }
 
         Arrays.sort(booksBorrowedList);
 
-        for (int i = 0; i < clientsList.size(); i++){
-            for (int j = 0; j < clientsList.size(); j++){
-                if (booksBorrowedList[i] == clientsList.get(j).getBooksBorrowed()){
+        for (int i = 0; i < clientsList.size(); i++) {
+            for (int j = 0; j < clientsList.size(); j++) {
+                if (booksBorrowedList[i] == clientsList.get(j).getBooksBorrowed()) {
                     clientsSortByBooksReaded.add(clientsList.get(j));
                 }
             }
@@ -287,48 +291,45 @@ public class Library {
                 clientsSortByBooksReaded.get(clientsList.size() - 1).getBooksBorrowed());
     }
 
-    public void borrowBook(){
+    public void borrowBook() {
         System.out.println("Client name: ");
         String name = sc.nextLine();
+        //exception
         System.out.println("Book title: ");
         String title = sc.nextLine();
-        if (!clientsList.get(findClient(name)).isHavingABook()){
-            if (findBook(title) >= 0 && booksList.get(findBook(title)).isAvailable()){
+        //excerption
+        if (!clientsList.get(findClient(name)).getHaveABook()) {
+            if (findBook(title) >= 0 && booksList.get(findBook(title)).getAvailable()) {
                 clientsList.get(findClient(name)).setHaveABook(true);
                 clientsList.get(findClient(name)).setBooksBorrowed();
                 booksList.get(findBook(title)).setAvailable(false);
-                System.out.println("Date to return (dd/MM/yyyy): ");
-
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                String dateToReturn = sc.next();
-                LocalDate localDate = LocalDate.parse(dateToReturn, formatter);
-                clientsList.get(findClient(name)).setDateReturn(localDate);
+                clientsList.get(findClient(name)).setDateReturn(true);
 
                 System.out.println("Process succesed!\n");
 
-            }else{
+            } else {
                 System.out.println("Book not found.");
             }
-        }else{
+        } else {
             System.out.println(clientsList.get(findClient(name)).getName() + " have already borrowed a book");
-            //optional
-            // details about the book
         }
     }
 
-    public void returnBook(){
+    public void returnBook() {
         System.out.println("Client name: ");
         String name = sc.nextLine();
+        //exception
         if (studentNameAlreadyExists(name)) {
             System.out.println("Book title: ");
             String title = sc.nextLine();
+            //exception
             if (bookTitleExists(title)) {
                 booksList.get(findBook(title)).setAvailable(true);
                 clientsList.get(findClient(name)).setHaveABook(false);
                 if (havePenalties(name)) {
                     System.out.println("10$ from penalties.");
                 }
-                clientsList.get(findClient(name)).setDateReturn(null);
+                clientsList.get(findClient(name)).setDateReturn(false);
                 booksList.get(findBook(title)).incrementHolders();
                 bookHolders.add(clientsList.get(findClient(name)));
                 System.out.println("Succes!");
@@ -338,43 +339,45 @@ public class Library {
         System.out.println("Not processed!");
     }
 
-    public boolean havePenalties(String name){
-        LocalDate date = LocalDate.now();
-        return date.isAfter(clientsList.get(findClient(name)).getDateReturn());
+    public boolean havePenalties(String name) {
+        Date currentDate = new Date();
+        return currentDate.after(clientsList.get(findClient(name)).getDateReturn());
     }
 
-    public void bookHistory(){
+    public void bookHistory() {
         System.out.println("Book's title: ");
         String title = sc.nextLine();
-        if (bookHolders.size() == 0){
+        if (bookHolders.size() == 0) {
             System.out.println("No holders to show");
             return;
         }
         System.out.println("Book holders: " + booksList.get(findBook(title)).getBookHolders());
-        for (int i = 0; i < bookHolders.size(); i++){
-            System.out.println((i+1) + ". " + bookHolders.get(i).getName() + " || ID code: " + bookHolders.get(i).getUniqueId());
+        for (int i = 0; i < bookHolders.size(); i++) {
+            System.out.println((i + 1) + ". " + bookHolders.get(i).getName() + " || ID code: " + bookHolders.get(i).getUniqueId());
         }
     }
 
-    public void checkPenalties(){
+    public void checkPenalties() {
 
-        LocalDate date = LocalDate.now();
+        Date currentDate = new Date();
 
         System.out.println("Client's name:");
         String name = sc.nextLine();
-        if (!clientsList.get(findClient(name)).isHavingABook()){
+        //exception
+        if (!clientsList.get(findClient(name)).getHaveABook()) {
             System.out.println("No book in " + name + "'s possesion.");
-        }else if(date.isAfter(clientsList.get(findClient(name)).getDateReturn())){
-            System.out.println("Penalties applied: 10$ \n" + "Date to return was " + clientsList.get(findClient(name)).getDateReturn() );
-        }else{
-            System.out.println("No penalties!\n" + "Date to return is " + clientsList.get(findClient(name)).getDateReturn() );
+        } else if (currentDate.after(clientsList.get(findClient(name)).getDateReturn())) {
+            System.out.println("Penalties applied: 10$ \n" + "Date to return was " + clientsList.get(findClient(name)).getDateReturn());
+        } else {
+            System.out.println("No penalties!\n" + "Date to return is " + clientsList.get(findClient(name)).getDateReturn());
         }
 
     }
 
-    public void removeBook(){
+    public void removeBook() {
         System.out.println("Book's title: ");
         String title = sc.nextLine();
+        //exception
         if (bookTitleExists(title)) {
             booksList.get(findBook(title)).setBookHolders(0);
             booksList.get(findBook(title)).setAvailable(false);
@@ -383,21 +386,45 @@ public class Library {
         }
     }
 
-    public void removeClient(){
+    public void removeClient() {
         System.out.println("Client's name: ");
         String name = sc.nextLine();
-        if (clientsList.get(findClient(name)).getType().equals("Student")){
-            studentsList.remove(findStudent(name));
-        }else{
-            teachersList.remove(findTeacher(name));
+        //exception
+        if (clientsList.get(findClient(name)).getType().equals("Student")) {
+            clientsList.remove(findStudent(name));
+        } else {
+            clientsList.remove(findTeacher(name));
         }
         clientsList.remove(findClient(name));
         System.out.println(name + " is no longer a client.");
     }
 
-    public void exit(){
+    public void exit() {
         System.out.println("Have a nice day!");
     }
 
+    public int getIntException() {
+        while (true) {
+            try {
+                return sc.nextInt();
+            } catch (InputMismatchException e) {
+                sc.nextLine();
+                System.out.println("Try to use only digits from 0 to 9.");
+            } catch (NoSuchElementException e) {
+                sc.nextLine();
+                System.out.println("Try to use only digits from 0 to 9.");
+            }
+        }
+    }
 
+    public String getNameException(){
+        while (true) {
+            try {
+                return sc.nextLine();
+            } catch (NoSuchElementException e) {
+                sc.nextLine();
+                System.out.println("Invalid name");
+            }
+        }
+    }
 }

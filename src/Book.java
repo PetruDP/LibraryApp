@@ -4,17 +4,13 @@ public class Book {
 
     private String title;
     private String author;
-    private String genre;
+    private Genre genre;
     private int pages;
     private boolean available;
     private String uniqueId ;
     private int bookHolders;
 
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public Book(String title, String author, String genre, int pages, boolean available) {
+    public Book(String title, String author, Genre genre, int pages, boolean available) {
         this.title = title;
         this.author = author;
         this.genre = genre;
@@ -24,59 +20,63 @@ public class Book {
         this.bookHolders = 0;
     }
 
-    public void setBookHolders(int bookHolders) {
-        this.bookHolders = bookHolders;
-    }
-
-    public void incrementHolders(){
-        this.bookHolders++;
-
-    }
-
-    public int getBookHolders() {
-        return bookHolders;
-    }
-
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getGenre() {
+    public Genre getGenre() {
         return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
     }
 
     public int getPages() {
         return pages;
     }
 
-    public void setPages(int pages) {
-        this.pages = pages;
-    }
-
-    public boolean isAvailable() {
+    public boolean getAvailable() {
         return available;
     }
+
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
+    public int getBookHolders() {
+        return bookHolders;
+    }
+// never used
+//    public void setTitle(String title) {
+//        this.title = title;
+//    }
+//
+//    public void setGenre(Genre genre) {
+//        this.genre = genre;
+//    }
+//
+//    public void setAuthor(String author) {
+//        this.author = author;
+//    }
+//
+//    public void setPages(int pages) {
+//        this.pages = pages;
+//    }
 
     public void setAvailable(boolean available) {
         this.available = available;
     }
 
+    public void setBookHolders(int bookHolders) {
+        this.bookHolders = bookHolders;
+    }
+
+
+    public void incrementHolders(){
+        this.bookHolders++;
+
+    }
 }
 
 

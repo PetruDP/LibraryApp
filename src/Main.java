@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("Welcome to " + library.getLibraryName() + " application1");
+        System.out.println("Welcome to " + library.getLibraryName() + " application");
 
         Scanner sc = new Scanner(System.in);
         boolean quit = false;
@@ -18,7 +18,7 @@ public class Main {
             showAvailableBooksAt50();
             mainMenu();
             System.out.println("Choose option: ");
-            int option = sc.nextInt();
+            int option = library.getIntException();
             sc.nextLine();
            if (option < 1 || option > 18){
                System.out.println("Invalid option!");
@@ -29,7 +29,7 @@ public class Main {
                        while (!quitClientM) {
                            clientsMenu();
                            System.out.println("Choose option: ");
-                           int optionClientM = sc.nextInt();
+                           int optionClientM = library.getIntException();
                            sc.nextLine();
 
 
@@ -51,7 +51,7 @@ public class Main {
                        while (!quitBooksM) {
                            booksMenu();
                            System.out.println("Choose option: ");
-                           int optionBooksM = sc.nextInt();
+                           int optionBooksM = library.getIntException();
                            sc.nextLine();
 
                            switch (optionBooksM) {
