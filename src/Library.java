@@ -464,7 +464,3 @@ public class Library {
     }
 
 }
-
-// Nu inteleg cum sa rezolv situatia cu Teacher Student si Client, mi se pare mai ok sa ma folosesc de o singura lista de tipul Client
-// decat sa folosesc doua liste (Student si Teacher ca sa pot apela metodele) plus lista de Client care oricum ramane pentru ca este in cerinta
-// nu imi dau seama exact daca trebuie sa fac case sensitive anumiti parametri sau nu
