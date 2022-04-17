@@ -60,7 +60,4 @@ public abstract class Client{
     public void setHaveABook(boolean haveABook) {
         this.haveABook = haveABook;
     }
-
-    public abstract Colleges getCollege();
-    public abstract int getCurrentYear();
 }

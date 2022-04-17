@@ -1,6 +1,3 @@
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +10,9 @@ public class Library {
 
     ArrayList<Client> clientsList = new ArrayList<>();
     ArrayList<Book> booksList = new ArrayList<>();
+    //Pentru book history trebuie folosita o Mapa de tipul: Map<Book, List<Client>> pentru a vedea toata lista clientilor
+    // care vin sa imprumute o anumita carte. in cazul in care se foloseste o Mapa de tipul Map<Book, Client> mereu pentru
+    // o carte va fi salvat ca valoare un singur Client.
     Map<Book, Client> bookHistory;
 
 
@@ -26,7 +26,7 @@ public class Library {
 
     public void addStudent() {
         System.out.println("Name: ");
-        sc.next();
+        sc.nextLine();
         String name = checkNameInput();
         System.out.println("College:");
         String inputCollege = checkNameInput();
@@ -144,8 +144,8 @@ public class Library {
         }
         for (int i = 0; i < clientsList.size(); i++) {
             if (clientsList.get(i).getClass().getSimpleName().equals("Student")) {
-                System.out.println("Name: " + clientsList.get(i).getName() + " || College: " + clientsList.get(i).getCollege() +
-                        " || Current year of study: " + clientsList.get(i).getCurrentYear() +
+                System.out.println("Name: " + clientsList.get(i).getName() + " || College: " + ((Student)clientsList.get(i)).getCollege() +
+                        " || Current year of study: " + ((Student)clientsList.get(i)).getCurrentYear() +
                         " || ID code: " + clientsList.get(i).getUniqueId());
             }
         }
@@ -302,7 +302,23 @@ public class Library {
                 clientsList.get(findClient(name)).setHaveABook(true);
                 clientsList.get(findClient(name)).setBooksBorrowed();
                 booksList.get(findBook(title)).setAvailable(false);
-                clientsList.get(findClient(name)).setDateReturn(true);
+                clientsList.get(findClient(name)).setDateReturn(true); // de verificat de ce e boolean aici
+                /*
+                * in momentul in care se imprumuta o carte, trebuie verificat daca e pentru prima oara cand se impumuta
+                * daca da, se aduaga numele cartii drept cheie si o lista de clienti cu primul client populat,
+                * daca nu, se obtine din mapa, valoarea pentru cheie, si se modifica doar aceasta crescand lista cu un nou client
+                *
+                * 1. se cauta cartea in mapa
+                * daca nu exista
+                *  - se creeaza lista de clienti (List<Client> clientList = new List<Client>(){}; clientList.add(clientul))
+                *  - se adauga client curent in lista
+                *  - se populeaza mapa cu map.put(titlu carte, clientList)
+                * daca exista
+                *  - se cauta lista de clienti
+                *  - se adauga client la lista
+                *  - ** pentru a obtine lista trebuie apelat Map.get(cheie)
+                *  - Map.set(titlu carte, Map.get(cheie).add(client))
+                * */
                 bookHistory.put(booksList.get(findBook(title)), clientsList.get(findClient(name)));
                 System.out.println("Process succesed!\n");
 
@@ -343,6 +359,15 @@ public class Library {
     }
 
     public void bookHistory() {
+
+        /*
+        * Pasi:
+        * 1. identifici cartea ca si cheie in mapa
+        * 2. iei lista de clienti (valoare din mapa pentru cheia ta)
+        * 3. cu un for de la 0 la list.size()-1 parcurgi toti clienti din lista
+        * 4. afisezi Client.name la fiecare pas
+        * */
+
         System.out.println("Book's title: ");
         String title = sc.nextLine();
         //exception?
@@ -417,13 +442,14 @@ public class Library {
         }
     }
     public String checkNameInput() {
-         String name = sc.nextLine();
+        String name = sc.nextLine();
         Pattern specialChar = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
         Matcher hasSpecial = specialChar.matcher(name);
-        while (name.matches(".*[0-9].*") || hasSpecial != null) {
+        while (name.matches(".*[0-9].*") || hasSpecial.find()) {
             System.out.println("Invalid name. Please do not use digits or special characters in name.");
             System.out.println("Name: ");
             name = sc.nextLine();
+            hasSpecial = specialChar.matcher(name);
         }
         return name;
 
