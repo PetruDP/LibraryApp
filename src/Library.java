@@ -13,7 +13,7 @@ public class Library {
 
     ArrayList<Client> clientsList = new ArrayList<>();
     ArrayList<Book> booksList = new ArrayList<>();
-    ArrayList<Client> bookHolders = new ArrayList<>();
+    Map<Book, Client> bookHistory;
 
 
     public Library(String libraryName) {
@@ -26,43 +26,47 @@ public class Library {
 
     public void addStudent() {
         System.out.println("Name: ");
+        sc.next();
         String name = checkNameInput();
         System.out.println("College:");
         String inputCollege = checkNameInput();
         Colleges college = Colleges.valueOf(inputCollege.toUpperCase());
         System.out.println("Current year of study: ");
         int currentYear = getIntException();
-        clientsList.add(new Client(name, college, currentYear));
+        sc.nextLine();
+        clientsList.add(new Student(name, college, currentYear));
         System.out.println(name + " succesfully added!");
     }
 
     public void addTeacher() {
         System.out.println("Name: ");
+        sc.next();
         String name = checkNameInput();
         System.out.println("Subject: ");
         String subject = checkNameInput();
-        clientsList.add(new Client(name, subject));
+        clientsList.add(new Teacher(name, subject));
         System.out.println(name + " succesfully added!\n");
     }
 
     public void addBook() {
         System.out.println("Title: ");
-        String title = sc.nextLine();
-        //exception?
+        sc.next();
+        String title = checkNameInput();
         System.out.println("Author: ");
         String author = checkNameInput();
         System.out.println("Genre: ");
         String strGenre = checkNameInput();
-        Genre genre = Genre.valueOf(strGenre);
+        Genre genre = Genre.valueOf(strGenre.toUpperCase());
         System.out.println("Number of pages: ");
         int pages = getIntException();
+        sc.nextLine();
         booksList.add(new Book(title, author, genre, pages, true));
         System.out.println(title + " succesfully added!\n");
     }
 
     public int findStudent(String name) {
         for (int i = 0; i < clientsList.size(); i++) {
-            if (name.equals(clientsList.get(i).getName()) && clientsList.get(i).getType().equals("Student")) {
+            if (name.equals(clientsList.get(i).getName()) && clientsList.get(i) instanceof Student) {
                 return i;
             }
         }
@@ -71,7 +75,7 @@ public class Library {
 
     public int findTeacher(String name) {
         for (int i = 0; i < clientsList.size(); i++) {
-            if (name.equals(clientsList.get(i).getName()) && clientsList.get(i).getType().equals("Teacher")) {
+            if (name.equals(clientsList.get(i).getName()) && clientsList.get(i) instanceof Teacher) {
                 return i;
             }
         }
@@ -129,7 +133,7 @@ public class Library {
             System.out.println("No clients to show");
         }
         for (int i = 0; i < clientsList.size(); i++) {
-            System.out.println("Name: " + clientsList.get(i).getName() + " || Type: " + clientsList.get(i).getType() +
+            System.out.println("Name: " + clientsList.get(i).getName() + " || Type: " + clientsList.get(i).getClass().getSimpleName() +
                     " || ID code: " + clientsList.get(i).getUniqueId());
         }
     }
@@ -139,7 +143,7 @@ public class Library {
             System.out.println("No students to show");
         }
         for (int i = 0; i < clientsList.size(); i++) {
-            if (clientsList.get(i).getType().equals("Student")) {
+            if (clientsList.get(i).getClass().getSimpleName().equals("Student")) {
                 System.out.println("Name: " + clientsList.get(i).getName() + " || College: " + clientsList.get(i).getCollege() +
                         " || Current year of study: " + clientsList.get(i).getCurrentYear() +
                         " || ID code: " + clientsList.get(i).getUniqueId());
@@ -254,7 +258,7 @@ public class Library {
         }
 
         for (int i = 0; i < clientsList.size(); i++) {
-            System.out.println("Name: " + clientsListAlph.get(i).getName() + " || Type: " + clientsListAlph.get(i).getType() +
+            System.out.println("Name: " + clientsListAlph.get(i).getName() + " || Type: " + clientsListAlph.get(i).getClass().getSimpleName() +
                     " || ID code: " + clientsListAlph.get(i).getUniqueId());
         }
     }
@@ -281,14 +285,16 @@ public class Library {
         System.out.println("The greatest reader is --> Name: " +
                 clientsSortByBooksReaded.get(clientsList.size() - 1).getName() + " || ID code: " +
                 clientsSortByBooksReaded.get(clientsList.size() - 1).getUniqueId() + " || Type: " +
-                clientsSortByBooksReaded.get(clientsList.size() - 1).getType() + " || Books borrowed: " +
+                clientsSortByBooksReaded.get(clientsList.size() - 1).getClass().getSimpleName() + " || Books borrowed: " +
                 clientsSortByBooksReaded.get(clientsList.size() - 1).getBooksBorrowed());
     }
 
     public void borrowBook() {
         System.out.println("Client name: ");
+        sc.next();
         String name = checkNameInput();
         System.out.println("Book title: ");
+        sc.next();
         String title = sc.nextLine();
         //excerption?
         if (!clientsList.get(findClient(name)).getHaveABook()) {
@@ -297,7 +303,7 @@ public class Library {
                 clientsList.get(findClient(name)).setBooksBorrowed();
                 booksList.get(findBook(title)).setAvailable(false);
                 clientsList.get(findClient(name)).setDateReturn(true);
-
+                bookHistory.put(booksList.get(findBook(title)), clientsList.get(findClient(name)));
                 System.out.println("Process succesed!\n");
 
             } else {
@@ -310,6 +316,7 @@ public class Library {
 
     public void returnBook() {
         System.out.println("Client name: ");
+        sc.next();
         String name = checkNameInput();
         if (studentNameAlreadyExists(name)) {
             System.out.println("Book title: ");
@@ -323,7 +330,6 @@ public class Library {
                 }
                 clientsList.get(findClient(name)).setDateReturn(false);
                 booksList.get(findBook(title)).incrementHolders();
-                bookHolders.add(clientsList.get(findClient(name)));
                 System.out.println("Succes!");
                 return;
             }
@@ -340,13 +346,14 @@ public class Library {
         System.out.println("Book's title: ");
         String title = sc.nextLine();
         //exception?
-        if (bookHolders.size() == 0) {
+        if (bookHistory.isEmpty()) {
             System.out.println("No holders to show");
             return;
         }
         System.out.println("Book holders: " + booksList.get(findBook(title)).getBookHolders());
-        for (int i = 0; i < bookHolders.size(); i++) {
-            System.out.println((i + 1) + ". " + bookHolders.get(i).getName() + " || ID code: " + bookHolders.get(i).getUniqueId());
+
+        for (Map.Entry<Book, Client> entry :bookHistory.entrySet()) {
+            System.out.println(entry.getKey() + "/" + entry.getValue());
         }
     }
 
@@ -355,6 +362,7 @@ public class Library {
         Date currentDate = new Date();
 
         System.out.println("Client's name:");
+        sc.next();
         String name = checkNameInput();
         if (!clientsList.get(findClient(name)).getHaveABook()) {
             System.out.println("No book in " + name + "'s possesion.");
@@ -374,20 +382,22 @@ public class Library {
         if (bookTitleExists(title)) {
             booksList.get(findBook(title)).setBookHolders(0);
             booksList.get(findBook(title)).setAvailable(false);
+            bookHistory.remove(booksList.get(findBook(title)));
             booksList.remove(findBook(title));
             System.out.println("Book removed from Library");
         }
     }
 
     public void removeClient() {
+
         System.out.println("Client's name: ");
+        sc.next();
         String name = checkNameInput();
-        if (clientsList.get(findClient(name)).getType().equals("Student")) {
-            clientsList.remove(findStudent(name));
-        } else {
-            clientsList.remove(findTeacher(name));
+
+        if (findClient(name) >= 0) {
+            // remove client as a value in map
+            clientsList.remove(findClient(name));
         }
-        clientsList.remove(findClient(name));
         System.out.println(name + " is no longer a client.");
     }
 
@@ -399,17 +409,13 @@ public class Library {
         while (true) {
             try {
                 return sc.nextInt();
+
             } catch (InputMismatchException e) {
                 sc.nextLine();
                 System.out.println("Try to use only digits from 0 to 9.");
             }
         }
     }
-
-
-    // implement map - commit
-    // make case sensitive - commit
-    // student teacher client - commit
     public String checkNameInput() {
          String name = sc.nextLine();
         Pattern specialChar = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
@@ -432,3 +438,7 @@ public class Library {
     }
 
 }
+
+// Nu inteleg cum sa rezolv situatia cu Teacher Student si Client, mi se pare mai ok sa ma folosesc de o singura lista de tipul Client
+// decat sa folosesc doua liste (Student si Teacher ca sa pot apela metodele) plus lista de Client care oricum ramane pentru ca este in cerinta
+// nu imi dau seama exact daca trebuie sa fac case sensitive anumiti parametri sau nu

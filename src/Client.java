@@ -2,25 +2,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-public class Client extends StudentTeacher{
+public abstract class Client{
     private String name;
     private String uniqueId;
     private int booksBorrowed;
     private Date dateReturn;
     private boolean haveABook;
 
-
-    public Client(String name, String  subject) {
-        super(subject);
-        this.name = name;
-        this.uniqueId = UUID.randomUUID().toString();
-        this.booksBorrowed = 0;
-        this.dateReturn = null;
-        this.haveABook = false;
-    }
-
-    public Client(String name, Colleges college, int currentYear) {
-        super(college, currentYear);
+    public Client(String name) {
         this.name = name;
         this.uniqueId = UUID.randomUUID().toString();
         this.booksBorrowed = 0;
@@ -32,30 +21,25 @@ public class Client extends StudentTeacher{
         return name;
     }
 
-    public String getUniqueId() {
-        return uniqueId;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public boolean getHaveABook() {
-        return haveABook;
+    public String getUniqueId() {
+        return uniqueId;
     }
 
     public int getBooksBorrowed() {
         return booksBorrowed;
     }
 
+    public void setBooksBorrowed() {
+        this.booksBorrowed++;
+    }
+
     public Date getDateReturn() {
         return dateReturn;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setUniqueId(String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
 
     public void setDateReturn(boolean myBoolean) {
         if(myBoolean){
@@ -67,54 +51,16 @@ public class Client extends StudentTeacher{
         } else{
             this.dateReturn = null;
         }
-
     }
 
-    public void setBooksBorrowed() {
-        this.booksBorrowed++;
+    public boolean getHaveABook() {
+        return haveABook;
     }
 
     public void setHaveABook(boolean haveABook) {
         this.haveABook = haveABook;
     }
 
-    @Override
-    public String getSubject() {
-        return super.getSubject();
-    }
-
-    @Override
-    public void setSubject(String subject) {
-        super.setSubject(subject);
-    }
-
-    @Override
-    public String getType() {
-        return super.getType();
-    }
-
-    @Override
-    public void setType(String type) {
-        super.setType(type);
-    }
-
-    @Override
-    public Colleges getCollege() {
-        return super.getCollege();
-    }
-
-    @Override
-    public void setCollege(Colleges college) {
-        super.setCollege(college);
-    }
-
-    @Override
-    public int getCurrentYear() {
-        return super.getCurrentYear();
-    }
-
-    @Override
-    public void setCurrentYear(int currentYear) {
-        super.setCurrentYear(currentYear);
-    }
+    public abstract Colleges getCollege();
+    public abstract int getCurrentYear();
 }

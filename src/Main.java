@@ -1,16 +1,17 @@
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class Main {
 
     public static Library library = new Library("Central Library");
+    public static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
         System.out.println("Welcome to " + library.getLibraryName() + " application");
 
-        Scanner sc = new Scanner(System.in);
         boolean quit = false;
 
         while(!quit) {
@@ -18,7 +19,6 @@ public class Main {
             mainMenu();
             System.out.println("Choose option: ");
             int option = library.getIntException();
-            sc.nextLine();
            if (option < 1 || option > 18){
                System.out.println("Invalid option!");
            }else{
@@ -29,7 +29,6 @@ public class Main {
                            clientsMenu();
                            System.out.println("Choose option: ");
                            int optionClientM = library.getIntException();
-                           sc.nextLine();
 
 
                            switch (optionClientM) {
@@ -51,7 +50,6 @@ public class Main {
                            booksMenu();
                            System.out.println("Choose option: ");
                            int optionBooksM = library.getIntException();
-                           sc.nextLine();
 
                            switch (optionBooksM) {
                                case 1 -> library.addBook();
