@@ -10,10 +10,7 @@ public class Library {
 
     ArrayList<Client> clientsList = new ArrayList<>();
     ArrayList<Book> booksList = new ArrayList<>();
-    //Pentru book history trebuie folosita o Mapa de tipul: Map<Book, List<Client>> pentru a vedea toata lista clientilor
-    // care vin sa imprumute o anumita carte. in cazul in care se foloseste o Mapa de tipul Map<Book, Client> mereu pentru
-    // o carte va fi salvat ca valoare un singur Client.
-    Map<Book, Client> bookHistory;
+    Map<String, ArrayList<Client>> bookHistory;
 
 
     public Library(String libraryName) {
@@ -29,12 +26,12 @@ public class Library {
         sc.nextLine();
         String name = checkNameInput();
         System.out.println("College:");
-        String inputCollege = checkNameInput();
-        Colleges college = Colleges.valueOf(inputCollege.toUpperCase());
+        String college = sc.nextLine();
+        college = checkCollege(college).toUpperCase();
         System.out.println("Current year of study: ");
         int currentYear = getIntException();
         sc.nextLine();
-        clientsList.add(new Student(name, college, currentYear));
+        clientsList.add(new Student(name, Colleges.valueOf(college), currentYear));
         System.out.println(name + " succesfully added!");
     }
 
@@ -91,7 +88,6 @@ public class Library {
         return -1;
     }
 
-    // ???????????
     public int findClient(String name) {
         for (int i = 0; i < clientsList.size(); i++) {
             if (name.equals(clientsList.get(i).getName())) {
@@ -144,8 +140,8 @@ public class Library {
         }
         for (int i = 0; i < clientsList.size(); i++) {
             if (clientsList.get(i).getClass().getSimpleName().equals("Student")) {
-                System.out.println("Name: " + clientsList.get(i).getName() + " || College: " + ((Student)clientsList.get(i)).getCollege() +
-                        " || Current year of study: " + ((Student)clientsList.get(i)).getCurrentYear() +
+                System.out.println("Name: " + clientsList.get(i).getName() + " || College: " + ((Student) clientsList.get(i)).getCollege() +
+                        " || Current year of study: " + ((Student) clientsList.get(i)).getCurrentYear() +
                         " || ID code: " + clientsList.get(i).getUniqueId());
             }
         }
@@ -186,7 +182,6 @@ public class Library {
     public void searchBook() {
         System.out.println("Enter the title: ");
         String title = sc.nextLine();
-        //exception?
 
         for (int i = 0; i < booksList.size(); i++) {
             if (title.equals(booksList.get(i).getTitle())) {
@@ -291,7 +286,7 @@ public class Library {
 
     public void borrowBook() {
         System.out.println("Client name: ");
-        sc.next();
+        sc.nextLine();
         String name = checkNameInput();
         System.out.println("Book title: ");
         sc.next();
@@ -303,23 +298,14 @@ public class Library {
                 clientsList.get(findClient(name)).setBooksBorrowed();
                 booksList.get(findBook(title)).setAvailable(false);
                 clientsList.get(findClient(name)).setDateReturn(true); // de verificat de ce e boolean aici
-                /*
-                * in momentul in care se imprumuta o carte, trebuie verificat daca e pentru prima oara cand se impumuta
-                * daca da, se aduaga numele cartii drept cheie si o lista de clienti cu primul client populat,
-                * daca nu, se obtine din mapa, valoarea pentru cheie, si se modifica doar aceasta crescand lista cu un nou client
-                *
-                * 1. se cauta cartea in mapa
-                * daca nu exista
-                *  - se creeaza lista de clienti (List<Client> clientList = new List<Client>(){}; clientList.add(clientul))
-                *  - se adauga client curent in lista
-                *  - se populeaza mapa cu map.put(titlu carte, clientList)
-                * daca exista
-                *  - se cauta lista de clienti
-                *  - se adauga client la lista
-                *  - ** pentru a obtine lista trebuie apelat Map.get(cheie)
-                *  - Map.set(titlu carte, Map.get(cheie).add(client))
-                * */
-                bookHistory.put(booksList.get(findBook(title)), clientsList.get(findClient(name)));
+                // este boolean pentru ca in returnBook se apeleaza metoda cu false ca parametru.
+                if (!bookHistory.containsKey(title)) {
+                    ArrayList<Client> bookHoldersHistory = new ArrayList<>();
+                    bookHoldersHistory.add(clientsList.get(findClient(name)));
+                    bookHistory.put(title, bookHoldersHistory);
+                } else {
+                    bookHistory.get(title).add(clientsList.get(findClient(name)));
+                }
                 System.out.println("Process succesed!\n");
 
             } else {
@@ -359,27 +345,21 @@ public class Library {
     }
 
     public void bookHistory() {
-
-        /*
-        * Pasi:
-        * 1. identifici cartea ca si cheie in mapa
-        * 2. iei lista de clienti (valoare din mapa pentru cheia ta)
-        * 3. cu un for de la 0 la list.size()-1 parcurgi toti clienti din lista
-        * 4. afisezi Client.name la fiecare pas
-        * */
-
         System.out.println("Book's title: ");
         String title = sc.nextLine();
-        //exception?
         if (bookHistory.isEmpty()) {
             System.out.println("No holders to show");
             return;
         }
-        System.out.println("Book holders: " + booksList.get(findBook(title)).getBookHolders());
 
-        for (Map.Entry<Book, Client> entry :bookHistory.entrySet()) {
-            System.out.println(entry.getKey() + "/" + entry.getValue());
+        ArrayList<Client> bookHoldersHistory = bookHistory.get(title);
+
+        System.out.println("Book \"" + title + "\" holders: " + booksList.get(findBook(title)).getBookHolders());
+        for (int i = 0; i < bookHoldersHistory.size(); i++) {
+            System.out.println("Name: " + bookHoldersHistory.get(i).getName() + " || Type: " + bookHoldersHistory.get(i).getClass().getSimpleName() +
+                    " || ID code: " + bookHoldersHistory.get(i).getUniqueId());
         }
+
     }
 
     public void checkPenalties() {
@@ -402,7 +382,6 @@ public class Library {
     public void removeBook() {
         System.out.println("Book's title: ");
         String title = sc.nextLine();
-        //exception?
 
         if (bookTitleExists(title)) {
             booksList.get(findBook(title)).setBookHolders(0);
@@ -418,12 +397,19 @@ public class Library {
         System.out.println("Client's name: ");
         sc.next();
         String name = checkNameInput();
-
         if (findClient(name) >= 0) {
-            // remove client as a value in map
-            clientsList.remove(findClient(name));
+            if (clientsList.get(findClient(name)).getHaveABook()) {
+                System.out.println(name + " is currently having a book.");
+            }
+            if (clientsList.get(findClient(name)).getBooksBorrowed() > 0) {
+
+                clientsList.remove(findClient(name));
+            }
+
+            System.out.println(name + " is no longer a client.");
+        } else {
+            System.out.println(name + " is not a client.");
         }
-        System.out.println(name + " is no longer a client.");
     }
 
     public void exit() {
@@ -441,6 +427,7 @@ public class Library {
             }
         }
     }
+
     public String checkNameInput() {
         String name = sc.nextLine();
         Pattern specialChar = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
@@ -463,8 +450,13 @@ public class Library {
 //        }
     }
 
-}
+    public String checkCollege(String college) {
+        try {
+            return college;
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("College not found.");
+        }
+    }
 
-// Nu inteleg cum sa rezolv situatia cu Teacher Student si Client, mi se pare mai ok sa ma folosesc de o singura lista de tipul Client
-// decat sa folosesc doua liste (Student si Teacher ca sa pot apela metodele) plus lista de Client care oricum ramane pentru ca este in cerinta
-// nu imi dau seama exact daca trebuie sa fac case sensitive anumiti parametri sau nu
+
+}
