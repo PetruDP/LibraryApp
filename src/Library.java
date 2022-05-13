@@ -40,7 +40,7 @@ public class Library {
         sc.nextLine();
         String name = checkNameInput();
         System.out.println("Subject: ");
-        String subject = checkNameInput();
+        String subject = sc.nextLine();
         clientsList.add(new Teacher(name, subject));
         System.out.println(name + " succesfully added!\n");
     }
@@ -50,7 +50,7 @@ public class Library {
         sc.nextLine();
         String title = checkNameInput();
         System.out.println("Author: ");
-        String author = checkNameInput();
+        String author = sc.nextLine();
         System.out.println("Genre: ");
         String strGenre = checkNameInput();
         Genre genre = checkGenre(strGenre);
@@ -106,7 +106,7 @@ public class Library {
         return false;
     }
 
-    public boolean studentNameAlreadyExists(String name) {
+    public boolean studentNameExists(String name) {
         for (int i = 0; i < clientsList.size(); i++) {
             if (name.equals(clientsList.get(i).getName())) {
                 return true;
@@ -279,19 +279,20 @@ public class Library {
     public void borrowBook() {
         System.out.println("Client name: ");
         sc.nextLine();
-        String name = checkNameInput();
+        String name = sc.nextLine();
         System.out.println("Book title: ");
         String title = sc.nextLine();
         if (!clientsList.get(findClient(name)).getHaveABook()) {
+            // schimba ordinea validarilor
             if (findBook(title) >= 0 && booksList.get(findBook(title)).getAvailable()) {
                 clientsList.get(findClient(name)).setHaveABook(true);
                 clientsList.get(findClient(name)).setBooksBorrowed();
                 booksList.get(findBook(title)).setAvailable(false);
                 clientsList.get(findClient(name)).setDateReturn(true);
-                if (!bookHistory.containsKey(title)) {
+                if (booksList.get(findBook(title)).getBookHolders() == 0) {
                     ArrayList<Client> bookHoldersHistory = new ArrayList<>();
                     bookHoldersHistory.add(clientsList.get(findClient(name)));
-                    bookHistory.put(title, bookHoldersHistory);
+                    this.bookHistory.put(title, bookHoldersHistory);
                 } else {
                     bookHistory.get(title).add(clientsList.get(findClient(name)));
                 }
@@ -308,8 +309,8 @@ public class Library {
     public void returnBook() {
         System.out.println("Client name: ");
         sc.nextLine();
-        String name = checkNameInput();
-        if (studentNameAlreadyExists(name)) {
+        String name = sc.nextLine();
+        if (studentNameExists(name)) {
             System.out.println("Book title: ");
             String title = sc.nextLine();
             if (bookTitleExists(title)) {
@@ -356,8 +357,10 @@ public class Library {
 
         System.out.println("Client's name:");
         sc.nextLine();
-        String name = checkNameInput();
-        if (!clientsList.get(findClient(name)).getHaveABook()) {
+        String name = sc.nextLine();
+        if (findClient(name) < 0){
+            System.out.println(name + " is not a client.");
+        }else if (!clientsList.get(findClient(name)).getHaveABook()) {
             System.out.println("No book in " + name + "'s possesion.");
         } else if (currentDate.after(clientsList.get(findClient(name)).getDateReturn())) {
             System.out.println("Penalties applied: 10$ \n" + "Date to return was " + clientsList.get(findClient(name)).getDateReturn());
@@ -384,7 +387,7 @@ public class Library {
 
         System.out.println("Client's name: ");
         sc.nextLine();
-        String name = checkNameInput();
+        String name = sc.nextLine();
         if (findClient(name) >= 0) {
             if (clientsList.get(findClient(name)).getHaveABook()) {
                 System.out.println(name + " is currently having a book.");
@@ -436,21 +439,48 @@ public class Library {
     public Colleges checkCollege(String college) {
         try {
             Colleges collegeC = Colleges.valueOf(college.toUpperCase());
-            return collegeC;
-        } catch (Exception e) {
+           return collegeC;
+        } catch (CollegeException e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
+//        Colleges colleges[] = Colleges.values();
+//        for (Colleges collegeC : colleges){
+//            if (Colleges.valueOf(college.toUpperCase()) == collegeC){
+//                return collegeC;
+//            }
+//        }
+//        System.out.println(college + " is not a valid college.");
+//        System.out.println("Colleges : ");
+//        for (Colleges collegeC : colleges){
+//            System.out.print(collegeC + " ");
+//        }
+//        System.out.println("College :");
+//        college = sc.nextLine();
+//        return checkCollege(college);
     }
 
     public Genre checkGenre(String genre) {
         try {
             Genre genreG = Genre.valueOf(genre.toUpperCase());
             return genreG;
-        } catch (Exception e) {
+        } catch (CollegeException e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
+//        Genre genres[] = Genre.values();
+//        for (Genre genreG : genres){
+//            if (Genre.valueOf(genre.toUpperCase()) == genreG){
+//                return genreG;
+//            }
+//        }
+//        System.out.println(genre + " is not a valid genre.");
+//        System.out.println("Genre : ");
+//        for (Genre genreG : genres){
+//            System.out.print(genreG + " ");
+//        }
+//        System.out.println("College :");
+//        genre = sc.nextLine();
+//        return checkGenre(genre);
     }
-
 }

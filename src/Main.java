@@ -1,4 +1,3 @@
-import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -7,7 +6,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class Main {
 
     public static Library library = new Library("Central Library");
-    public static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
         System.out.println("Welcome to " + library.getLibraryName() + " application");
@@ -122,13 +120,13 @@ public class Main {
              ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
              Runnable runnable = new Runnable() {
-                int countdownStarter = 50;
+                int countdownStarter = 300;
 
                 public void run() {
                     countdownStarter--;
                     if (countdownStarter == 0) {
                         library.booksInLibrary();
-                        countdownStarter = 50;
+                        countdownStarter = 300;
                     }
                 }
             };
